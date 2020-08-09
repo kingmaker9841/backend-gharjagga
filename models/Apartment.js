@@ -9,6 +9,7 @@ const Apartment = mongoose.model('apartment', new mongoose.Schema({
     price: {type: Number, required: true},
     title: {type: String, required: true},
     description: {type: String, required: true},
-    near_by: [{type: String}]
+    near_by: [{type: String}],
+    address: {type: String, required: true}
 }));
 module.exports = Apartment;

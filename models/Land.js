@@ -8,6 +8,7 @@ const Land = mongoose.model('land', new mongoose.Schema({
     title: {type: String, required: true},
     area: {type: String, required: true},
     description: {type: String, required: true},
-    near_by: [{type: String}]
+    near_by: [{type: String}],
+    address: {type: String, required: true}
 }));
 module.exports = Land;

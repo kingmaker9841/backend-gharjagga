@@ -37,20 +37,20 @@ const AdminLand = require('../models/AdminLand');
 router.get('/all', (req,res)=>{
     let brr = [], crr = [];
     AdminGhar.find({})
-    .select('price area title')
+    .select('price area title address')
     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
     .populate('image_info', 'main_image')
     .then((result_adminGhar)=>{
         console.log("Success: " + result_adminGhar); 
         AdminLand.find({})
-            .select('price area title')
+            .select('price area title address')
             .populate({path: 'owner_id', select: ['f_name', 'l_name']})
             .populate('image_info', 'main_image')
             .then((result_adminLand)=>{
                 console.log("Success: " + result_adminLand); 
                 AdminApartment.find({})
-                    .select('price title')
+                    .select('price title address')
                     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
                     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
                     .populate('image_info', 'main_image')
@@ -58,16 +58,16 @@ router.get('/all', (req,res)=>{
                         console.log("Success: " + result_adminApartment); 
                         brr = result_adminGhar.concat(result_adminLand, result_adminApartment);
                         Ghar.find({})
-                        .select('price title area')
+                        .select('price title area address')
                         .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
                         .populate('image_info', 'main_image')
                         .then((result_ghar)=>{
                             Land.find({})
-                            .select('price area title')
+                            .select('price area title address')
                             .populate('image_info', 'main_image')
                             .then((result_land)=>{
                                 Apartment.find({})
-                                .select('price title')
+                                .select('price title address')
                                 .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
                                 .populate('image_info', 'main_image')
                                 .then((result_apartment)=>{

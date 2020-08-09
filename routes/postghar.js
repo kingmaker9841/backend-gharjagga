@@ -50,7 +50,7 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, area, near_by, description} = req.body;
+    let {price, area, near_by, description, address} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -153,7 +153,8 @@ router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', ma
                 description: description,
                 location: location_res._id,
                 user_id: req.session.user ,
-                image_info: image_res._id
+                image_info: image_res._id,
+                address: address
             }).save().then((ghar_result)=>{
                 console.log("Success Ghar Result: " + ghar_result);
                 res.status(200).json(ghar_result);
@@ -209,7 +210,7 @@ router.get('/delete/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
 
 router.post('/update/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, area, near_by, description} = req.body;
+    let {price, area, near_by, description, address} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -312,7 +313,8 @@ router.post('/update/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
                 description: description,
                 location: location_res._id,
                 user_id: req.session.user ,
-                image_info: image_res._id
+                image_info: image_res._id,
+                address: address
             }).save().then((ghar_result)=>{
                 console.log("Success Ghar Result: " + ghar_result);
                 res.status(200).json(ghar_result);

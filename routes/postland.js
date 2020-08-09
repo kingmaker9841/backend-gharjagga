@@ -46,7 +46,7 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, latitude, longitude} = req.body;
-    let {price, area, near_by, description, title} = req.body;
+    let {price, area, near_by, description, title, address} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -97,7 +97,8 @@ router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', ma
                 description: description,
                 location: location_res._id,
                 user_id: req.session.user ,
-                image_info: image_res._id
+                image_info: image_res._id,
+                address: address
             }).save().then((land_result)=>{
                 console.log("Success Land Result: " + land_result);
                 res.status(200).json(land_result);
@@ -149,7 +150,7 @@ router.get('/delete/:land_id', ensureAuthenticatedUser, (req,res)=>{
 
 router.post('/update/:land_id', ensureAuthenticatedUser, (req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, latitude, longitude} = req.body;
-    let {price, area, near_by, description, title} = req.body;
+    let {price, area, near_by, description, title, address} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -200,7 +201,8 @@ router.post('/update/:land_id', ensureAuthenticatedUser, (req,res)=>{
                 description: description,
                 location: location_res._id,
                 user_id: req.session.user ,
-                image_info: image_res._id
+                image_info: image_res._id,
+                address: address
             }).save().then((land_result)=>{
                 console.log("Success Land Result: " + land_result);
                 res.status(200).json(land_result);

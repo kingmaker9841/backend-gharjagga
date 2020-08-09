@@ -8,6 +8,7 @@ const AdminGhar = mongoose.model('admin_ghar', new mongoose.Schema({
     price: {type: Number, required: true},
     area: {type: String, required: true},
     description: {type: String, required: true},
-    near_by: [{type: String}]
+    near_by: [{type: String}],
+    address: {type: String, required: true}
 }));
 module.exports = AdminGhar;
