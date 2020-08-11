@@ -6,5 +6,6 @@ router.use('/admin', require('./admin'));
 router.use('/postghar', require('./postghar'));
 router.use('/postapartment', require('./postapartment'));
 router.use('/postland', require('./postland'));
+router.use('/search', require('./search'));
 
 module.exports = router;
