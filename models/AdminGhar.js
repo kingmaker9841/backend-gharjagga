@@ -9,6 +9,11 @@ const AdminGhar = mongoose.model('admin_ghar', new mongoose.Schema({
     area: {type: String, required: true},
     description: {type: String, required: true},
     near_by: [{type: String}],
-    address: {type: String, required: true}
+    address: {type: String, required: true},
+    title : { type: String, required : true},
+    price_type: {type: String, required: true},
+    property_type: {type: String, required: true},
+    purpose: {type: String, required: true},
+    views: {type: Number}
 }));
 module.exports = AdminGhar;

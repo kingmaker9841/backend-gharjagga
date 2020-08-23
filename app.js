@@ -24,12 +24,13 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use('/upload', express.static('upload'));
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 1000*60*60
+        maxAge: 1000*60*10
     }
 }));
 app.use(passport.initialize());

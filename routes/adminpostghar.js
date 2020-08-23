@@ -12,7 +12,6 @@ const Numbers = require('../models/Number');
 const TrueFalse = require('../models/TrueFalse');
 const multer = require('multer');
 const fs = require('fs');
-const {v4: uuidv4} = require('uuid');
 const async = require('async');
 const { ensureAuthenticated } = require('../config/EnsureAuthenticated');
 require('../config/EnsureAuthenticated');
@@ -50,7 +49,7 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticated ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, area, near_by, description, address} = req.body;
+    let {price, area, near_by, description, address, price_type, property_type, purpose} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -153,7 +152,11 @@ router.post('/', ensureAuthenticated ,upload.fields([{ name: 'mainImage', maxCou
                 description: description,
                 location: location_res._id,
                 image_info: image_res._id,
-                address: address
+                address: address,
+                price_type: price_type,
+                property_type: property_type,
+                purpose: purpose,
+                views: 1
             }).save().then((ghar_result)=>{
                 console.log("Success Ghar Result: " + ghar_result);
                 res.status(200).json(ghar_result);
@@ -187,7 +190,10 @@ router.get('/:ghar_id', ensureAuthenticated, (req,res)=>{
     .then((result)=>{
         console.log("Success: " + result); 
         res.status(200).json(result);
-    });
+    })
+    .catch((err)=>{
+        res.status(400).send("No Result");
+    })
 });
 
 //To delete specific ghar with GHAR_ID

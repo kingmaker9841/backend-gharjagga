@@ -46,7 +46,7 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, latitude, longitude} = req.body;
-    let {price, area, near_by, description, title, address} = req.body;
+    let {price, area, near_by, description, title, address, price_type, property_type, purpose} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -98,7 +98,11 @@ router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', ma
                 location: location_res._id,
                 user_id: req.session.user ,
                 image_info: image_res._id,
-                address: address
+                address: address,
+                price_type: price_type,
+                property_type: property_type,
+                purpose: purpose,
+                views: 1
             }).save().then((land_result)=>{
                 console.log("Success Land Result: " + land_result);
                 res.status(200).json(land_result);
@@ -142,7 +146,7 @@ router.get('/delete/:land_id', ensureAuthenticatedUser, (req,res)=>{
             return res.status(500);
         }
         console.log("Successful Deletion & The deleted Doc is : " + result);
-        return res.status(200).json("Deleted!");
+        return res.json("Deleted");
     });
 });
 
@@ -150,8 +154,7 @@ router.get('/delete/:land_id', ensureAuthenticatedUser, (req,res)=>{
 
 router.post('/update/:land_id', ensureAuthenticatedUser, (req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, latitude, longitude} = req.body;
-    let {price, area, near_by, description, title, address} = req.body;
-    let imageArray = [];
+    let {price, area, near_by, description, title, address, price_type, purpose} = req.body;
     async.waterfall([
         (done)=>{
             Province.findOne({prov_number: prov_number}).then((prov_res)=>{
@@ -179,31 +182,24 @@ router.post('/update/:land_id', ensureAuthenticatedUser, (req,res)=>{
                 latitude: latitude,
                 longitude: longitude
             }).save().then((location_res)=>{
-                imageArray = req.files['galleryImage'].map((x)=>{
-                    return x.path;
-                })
-                new Image({
-                    main_image: req.files['mainImage'][0].path,
-                    gallery_image: imageArray
-                }).save().then((image_res)=>{
-                    done(null, owner_res, location_res, image_res);
-                })
+                done(null, owner_res, location_res);
                 
             });
         },
-        (owner_res, location_res, image_res ,done)=>{
-            new Land({
+        (owner_res, location_res ,done)=>{
+            Land.findOneAndUpdate({_id: req.params.land_id , user_id: req.session.user} ,{
                 owner_id: owner_res._id,
                 price: price,
                 area: area,
-                title: title,
                 near_by: near_by,
                 description: description,
                 location: location_res._id,
                 user_id: req.session.user ,
-                image_info: image_res._id,
-                address: address
-            }).save().then((land_result)=>{
+                address: address,
+                title: title,
+                price_type: price_type,
+                purpose: purpose
+            }).then((land_result)=>{
                 console.log("Success Land Result: " + land_result);
                 res.status(200).json(land_result);
             })

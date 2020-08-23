@@ -52,7 +52,7 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticated ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, title, near_by, description, address} = req.body;
+    let {price, title, near_by, description, address, price_type, property_type, purpose} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -155,7 +155,11 @@ router.post('/', ensureAuthenticated ,upload.fields([{ name: 'mainImage', maxCou
                 description: description,
                 location: location_res._id,
                 image_info: image_res._id,
-                address: address
+                address: address,
+                price_type: price_type,
+                property_type: property_type,
+                purpose: purpose,
+                views: 1
             }).save().then((apartment_result)=>{
                 console.log("Success Apartment Result: " + apartment_result);
                 res.status(200).json(apartment_result);
@@ -211,8 +215,7 @@ router.get('/delete/:apartment_id', ensureAuthenticated, (req,res)=>{
 
 router.post('/update/:apartment_id', ensureAuthenticated, (req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, title, near_by, description, address} = req.body;
-    let imageArray = [];
+    let {price, title, near_by, description, address, price_type, purpose} = req.body;
     async.waterfall([
         (done)=>{
             Province.findOne({prov_number: prov_number}).then((prov_res)=>{
@@ -291,20 +294,12 @@ router.post('/update/:apartment_id', ensureAuthenticated, (req,res)=>{
                 latitude: latitude,
                 longitude: longitude
             }).save().then((location_res)=>{
-                imageArray = req.files['galleryImage'].map((x)=>{
-                    return x.path;
-                })
-                new Image({
-                    main_image: req.files['mainImage'][0].path,
-                    gallery_image: imageArray
-                }).save().then((image_res)=>{
-                    done(null, owner_res, ghar_room_info_res, facilities_res, location_res, image_res);
-                })
+                done(null, owner_res, ghar_room_info_res, facilities_res, location_res);
                 
             });
         },
-        (owner_res, ghar_room_info_res, facilities_res, location_res, image_res ,done)=>{
-            AdminApartment.findOneAndUpdate({_id: req.params.ghar_id , user_id: req.session.user} ,{
+        (owner_res, ghar_room_info_res, facilities_res, location_res ,done)=>{
+            AdminApartment.findOneAndUpdate({_id: req.params.apartment_id , user_id: req.session.user} ,{
                 owner_id: owner_res._id,
                 ghar_room_info: ghar_room_info_res._id,
                 facilities_info: facilities_res._id,
@@ -313,10 +308,11 @@ router.post('/update/:apartment_id', ensureAuthenticated, (req,res)=>{
                 near_by: near_by,
                 description: description,
                 location: location_res._id,
-                image_info: image_res._id,
-                address: address
-            }).save().then((apartment_result)=>{
-                console.log("Success Ghar Result: " + apartment_result);
+                address: address,
+                price_type: price_type,
+                purpose: purpose
+            }).then((apartment_result)=>{
+                console.log("Success Apartment Result: " + apartment_result);
                 res.status(200).json(apartment_result);
             })
         }

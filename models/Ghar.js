@@ -11,6 +11,10 @@ const Ghar = mongoose.model('ghar', new mongoose.Schema({
     title: {type: String},
     description: {type: String, required: true},
     near_by: [{type: String}],
-    address: {type: String, required: true}
+    address: {type: String, required: true},
+    price_type: {type: String, required: true},
+    property_type: {type: String, required: true},
+    purpose: {type: String, required: true},
+    views: {type: Number}
 }));
 module.exports = Ghar;

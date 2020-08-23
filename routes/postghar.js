@@ -50,8 +50,9 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, area, near_by, description, address} = req.body;
+    let {price, area, near_by, description, address, title, price_type, property_type, purpose} = req.body;
     let imageArray = [];
+    // console.log(req.files['mainImage'][0]);
     async.waterfall([
         (done)=>{
             Province.findOne({prov_number: prov_number}).then((prov_res)=>{
@@ -154,7 +155,12 @@ router.post('/', ensureAuthenticatedUser ,upload.fields([{ name: 'mainImage', ma
                 location: location_res._id,
                 user_id: req.session.user ,
                 image_info: image_res._id,
-                address: address
+                address: address,
+                title : title,
+                price_type: price_type,
+                property_type: property_type,
+                purpose: purpose,
+                views: 1
             }).save().then((ghar_result)=>{
                 console.log("Success Ghar Result: " + ghar_result);
                 res.status(200).json(ghar_result);
@@ -174,7 +180,7 @@ router.get('/', ensureAuthenticatedUser, (req,res)=>{
     .populate('image_info')
     .then((result)=>{
         console.log("Success: " + result); 
-        res.status(200).json(result);
+        res.json(result);
     });
 });
 
@@ -190,7 +196,10 @@ router.get('/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
     .then((result)=>{
         console.log("Success: " + result); 
         res.status(200).json(result);
-    });
+    })
+    .catch((err)=>{
+        return res.status(400).json('');
+    })
 });
 
 //To delete specific ghar with GHAR_ID
@@ -202,7 +211,7 @@ router.get('/delete/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
             return res.status(500);
         }
         console.log("Successful Deletion & The deleted Doc is : " + result);
-        return res.status(200).json("Deleted!");
+        return res.json("Deleted");
     });
 });
 
@@ -210,8 +219,7 @@ router.get('/delete/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
 
 router.post('/update/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, area, near_by, description, address} = req.body;
-    let imageArray = [];
+    let {price, area, near_by, description, address, title, price_type, purpose} = req.body;
     async.waterfall([
         (done)=>{
             Province.findOne({prov_number: prov_number}).then((prov_res)=>{
@@ -290,19 +298,11 @@ router.post('/update/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
                 latitude: latitude,
                 longitude: longitude
             }).save().then((location_res)=>{
-                imageArray = req.files['galleryImage'].map((x)=>{
-                    return x.path;
-                })
-                new Image({
-                    main_image: req.files['mainImage'][0].path,
-                    gallery_image: imageArray
-                }).save().then((image_res)=>{
-                    done(null, owner_res, ghar_room_info_res, facilities_res, location_res, image_res);
-                })
+                done(null, owner_res, ghar_room_info_res, facilities_res, location_res);
                 
             });
         },
-        (owner_res, ghar_room_info_res, facilities_res, location_res, image_res ,done)=>{
+        (owner_res, ghar_room_info_res, facilities_res, location_res ,done)=>{
             Ghar.findOneAndUpdate({_id: req.params.ghar_id , user_id: req.session.user} ,{
                 owner_id: owner_res._id,
                 ghar_room_info: ghar_room_info_res._id,
@@ -313,9 +313,11 @@ router.post('/update/:ghar_id', ensureAuthenticatedUser, (req,res)=>{
                 description: description,
                 location: location_res._id,
                 user_id: req.session.user ,
-                image_info: image_res._id,
-                address: address
-            }).save().then((ghar_result)=>{
+                address: address,
+                title: title,
+                price_type: price_type,
+                purpose: purpose
+            }).then((ghar_result)=>{
                 console.log("Success Ghar Result: " + ghar_result);
                 res.status(200).json(ghar_result);
             })

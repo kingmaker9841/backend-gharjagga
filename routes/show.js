@@ -15,6 +15,7 @@ const Numbers = require('../models/Number');
 const TrueFalse = require('../models/TrueFalse');
 const async = require('async');
 const AdminLand = require('../models/AdminLand');
+const Users = require('../models/Users');
 
 // router.get('/owner', (req,res)=>{
 //     Owner.find({})
@@ -25,49 +26,129 @@ const AdminLand = require('../models/AdminLand');
 //     })
 // });
 
-// router.get('/users', (req,res)=>{
-//     Users.find({})
-//     .populate('prov_id')
-//     .populate('dist_id')
-//     .then((result)=>{
-//         res.status(200).json(result);
-//     })
-// });
+router.get('/users', (req,res)=>{
+    if (!req.session.user){
+        return res.status(401).json("Unauthorized");
+    }
+    Users.findById(req.session.user)
+    .populate('prov_id')
+    .populate('dist_id')
+    .then((result)=>{
+        console.log(result);
+        res.status(200).json(result);
+    })
+});
 
-router.get('/all', (req,res)=>{
-    let brr = [], crr = [];
+router.get('/only/adminhouse', (req,res)=>{
     AdminGhar.find({})
-    .select('price area title address')
+    .select('price area title address purpose views property_type')
     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
     .populate('image_info', 'main_image')
     .then((result_adminGhar)=>{
-        console.log("Success: " + result_adminGhar); 
+        res.status(200).json(result_adminGhar);
+    }).catch((err)=>{
+        console.log("Admin Ghar Err: " + err);
+        return ;
+    });
+});
+
+router.get('/only/house', (req,res)=>{
+    Ghar.find({})
+        .select('price title area address purpose views property_type')
+        .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+        .populate('image_info', 'main_image')
+        .then((result_ghar)=>{
+            res.status(200).json(result_ghar);
+        }).catch((err)=>{
+            console.log("Ghar Err: " + err);
+            return ;
+        })
+});
+
+router.get('/only/adminapartment', (req,res)=>{
+    AdminApartment.find({})
+    .select('price title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminApartment)=>{
+        res.status(200).json(result_adminApartment);
+    }).catch((err)=>{
+        console.log("Admin Apartment Error: " + err);
+        return;
+    });
+});
+
+router.get('/only/apartment', (req,res)=>{
+    Apartment.find({})
+        .select('price title address purpose views property_type')
+        .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+        .populate('image_info', 'main_image')
+        .then((result_apartment)=>{
+            res.status(200).json(result_apartment);
+        }).catch((err)=>{
+            console.log("Apartment Error: " + err);
+            return;
+        });
+});
+
+router.get('/only/adminland', (req,res)=>{
+    AdminLand.find({})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate('image_info', 'main_image')
+    .then((result_adminLand)=>{ 
+        res.status(200).json(result_adminLand);
+    }).catch((err)=>{
+        console.log("Only Land Error: " + err);
+        return ;
+    });
+});
+
+router.get('/only/land', (req,res)=>{
+    Land.find({})
+        .select('price area title address purpose views property_type')
+        .populate('image_info', 'main_image')
+        .then((result_land)=>{
+            res.status(200).json(result_land);
+        }).catch((err)=>{
+            console.log("Only Land Error: " + err);
+            return;
+        })
+})
+
+router.get('/all', (req,res)=>{
+    let brr = [], crr = [];
+    AdminGhar.find({})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{ 
         AdminLand.find({})
-            .select('price area title address')
+            .select('price area title address purpose views property_type')
             .populate({path: 'owner_id', select: ['f_name', 'l_name']})
             .populate('image_info', 'main_image')
-            .then((result_adminLand)=>{
-                console.log("Success: " + result_adminLand); 
+            .then((result_adminLand)=>{   
                 AdminApartment.find({})
-                    .select('price title address')
+                    .select('price title address purpose views property_type')
                     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
                     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
                     .populate('image_info', 'main_image')
                     .then((result_adminApartment)=>{
-                        console.log("Success: " + result_adminApartment); 
                         brr = result_adminGhar.concat(result_adminLand, result_adminApartment);
                         Ghar.find({})
-                        .select('price title area address')
+                        .select('price title area address purpose views property_type')
                         .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
                         .populate('image_info', 'main_image')
                         .then((result_ghar)=>{
                             Land.find({})
-                            .select('price area title address')
+                            .select('price area title address purpose views property_type')
                             .populate('image_info', 'main_image')
                             .then((result_land)=>{
                                 Apartment.find({})
-                                .select('price title address')
+                                .select('price title address purpose views property_type')
                                 .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
                                 .populate('image_info', 'main_image')
                                 .then((result_apartment)=>{
@@ -136,27 +217,58 @@ router.get('/:ghar_id', (req,res)=>{
                                                     if (result_land.length === 0){
                                                         return res.status(400).json("Could NOt Find");
                                                     }else{
-                                                        return res.status(200).json(result_land);
+                                                        Land.findOneAndUpdate({_id : req.params.ghar_id}, { $inc : { views: 1}}, (err, data)=>{
+                                                            if (err){
+                                                                console.log(err);
+                                                            }
+                                                            return res.status(200).json(result_land);
+                                                        });
                                                     }
                                                 });
                                             }else{
-                                                return res.status(200).json(result_apartment);
+                                                Apartment.findOneAndUpdate({_id : req.params.ghar_id}, { $inc : { views: 1}}, (err,data)=>{
+                                                    if (err){
+                                                        console.log("Apartment Error: " + err);
+                                                    }
+                                                    return res.status(200).json(result_apartment);
+                                                });
                                             }
                                         });
                                 }else{
-                                    return res.status(200).json(result_ghar);
+                                    Ghar.findOneAndUpdate({_id : req.params.ghar_id}, { $inc : { views: 1}}, (err,data)=>{
+                                        if (err){
+                                            return err;
+                                        }
+                                        return res.status(200).json(result_ghar);
+                                    });
                                 }
                             });
                         }else{
-                            return res.status(200).json(result_adminApartment);
+                            AdminApartment.findOneAndUpdate({_id : req.params.ghar_id}, { $inc : { views: 1}}, (err,data)=>{
+                                if (err){
+                                    return err;
+                                }
+                                return res.status(200).json(result_adminApartment);
+                            });
                         }
                     });
                 }else{
-                    return res.status(200).json(result_adminLand);
+                    AdminLand.findOneAndUpdate({_id : req.params.ghar_id}, { $inc : { views: 1}}, (err,data)=>{
+                        if (err){
+                            return err;
+                        }
+                        return res.status(200).json(result_adminLand);
+                    });
                 }
             });
         }else{
-            return res.status(200).json(result);
+            AdminGhar.findOneAndUpdate({_id : req.params.ghar_id}, { $inc : { views: 1}}, (err,data)=>{
+                if (err){
+                    return err;
+                }
+                return res.status(200).json(result);
+            });
+            
         }
         
     }).catch((err)=>{
@@ -183,6 +295,64 @@ router.get('/province/name', (req,res)=>{
         });
         res.status(200).send(arr);
     })
+});
+
+router.get('/get/special', (req,res)=>{
+    let brr = [];
+    AdminGhar.find({})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{ 
+        AdminLand.find({})
+            .select('price area title address purpose views property_type')
+            .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+            .populate('image_info', 'main_image')
+            .then((result_adminLand)=>{ 
+                AdminApartment.find({})
+                    .select('price title address purpose views property_type')
+                    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+                    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+                    .populate('image_info', 'main_image')
+                    .then((result_adminApartment)=>{ 
+                        brr = result_adminGhar.concat(result_adminLand, result_adminApartment);
+                        res.status(200).send(brr);
+                    })
+                    .catch((err)=>{
+                        console.log("Error: " + err);
+                        res.send("Some Error" + err);
+                    })
+                });
+            });
+});
+
+router.get('/get/normal', (req,res)=>{
+    let crr = []
+    Ghar.find({})
+    .select('price title area address purpose views property_type')
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_ghar)=>{
+        Land.find({})
+        .select('price area title address purpose views property_type')
+        .populate('image_info', 'main_image')
+        .then((result_land)=>{
+            Apartment.find({})
+            .select('price title address purpose views property_type')
+            .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+            .populate('image_info', 'main_image')
+            .then((result_apartment)=>{
+                crr = result_ghar.concat(result_land, result_apartment);
+                res.status(200).send(crr);
+            })
+            .catch((err)=>{
+                console.log("Error: " + err);
+                res.send("Some Error" + err);
+            })
+        });
+    });
+            
 })
 
 module.exports = router;

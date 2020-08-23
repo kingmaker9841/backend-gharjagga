@@ -10,7 +10,7 @@ router.post('/', (req,res)=>{
     let {f_name,l_name,prov_number,district_name,email,password,phone_number} = req.body;
     Users.findOne({email: email}).then((email_result)=>{
         if (email_result){
-            res.status(400).json("Email Already Registered");
+            res.status(200).send("Email Already Registered");
         }else{
             async.waterfall([
                 (done)=>{
