@@ -49,7 +49,7 @@ const upload = multer({storage: storage, limits: {
 
 router.post('/', ensureAuthenticated ,upload.fields([{ name: 'mainImage', maxCount: 1 }, {name: 'galleryImage', maxCount: 8}]) ,(req,res)=>{
     let {prov_number, district_name, f_name, l_name, owner_phone_number, floor, bedroom, bathroom, kitchen, living, hall, puja, balcony, solar, wifi, tv, furniture, water_supply, latitude, longitude} = req.body;
-    let {price, area, near_by, description, address, price_type, property_type, purpose} = req.body;
+    let {price, area, near_by, description, address, price_type, property_type, purpose, property_listing, title} = req.body;
     let imageArray = [];
     async.waterfall([
         (done)=>{
@@ -156,7 +156,9 @@ router.post('/', ensureAuthenticated ,upload.fields([{ name: 'mainImage', maxCou
                 price_type: price_type,
                 property_type: property_type,
                 purpose: purpose,
-                views: 1
+                views: 1,
+                property_listing: property_listing,
+                title: title
             }).save().then((ghar_result)=>{
                 console.log("Success Ghar Result: " + ghar_result);
                 res.status(200).json(ghar_result);

@@ -17,15 +17,6 @@ const async = require('async');
 const AdminLand = require('../models/AdminLand');
 const Users = require('../models/Users');
 
-// router.get('/owner', (req,res)=>{
-//     Owner.find({})
-//     .populate({path: 'prov_id', select: 'prov_name -_id'})
-//     .populate({path: 'district_id', select: 'district_name -_id'})
-//     .then((result)=>{
-//         res.status(200).json(result);
-//     })
-// });
-
 router.get('/users', (req,res)=>{
     if (!req.session.user){
         return res.status(401).json("Unauthorized");
@@ -41,6 +32,47 @@ router.get('/users', (req,res)=>{
 
 router.get('/only/adminhouse', (req,res)=>{
     AdminGhar.find({})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{
+        res.status(200).json(result_adminGhar);
+    }).catch((err)=>{
+        console.log("Admin Ghar Err: " + err);
+        return ;
+    });
+});
+router.get('/only/special/adminhouse', (req,res)=>{
+    AdminGhar.find({property_listing: 'Special'})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{
+        res.status(200).json(result_adminGhar);
+    }).catch((err)=>{
+        console.log("Admin Ghar Err: " + err);
+        return ;
+    });
+});
+
+router.get('/only/featured/adminhouse', (req,res)=>{
+    AdminGhar.find({property_listing: 'Featured'})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{
+        res.status(200).json(result_adminGhar);
+    }).catch((err)=>{
+        console.log("Admin Ghar Err: " + err);
+        return ;
+    });
+});
+
+router.get('/only/normal/adminhouse', (req,res)=>{
+    AdminGhar.find({property_listing: 'Normal'})
     .select('price area title address purpose views property_type')
     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
@@ -80,6 +112,48 @@ router.get('/only/adminapartment', (req,res)=>{
     });
 });
 
+router.get('/only/special/adminapartment', (req,res)=>{
+    AdminApartment.find({property_listing: 'Special'})
+    .select('price title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminApartment)=>{
+        res.status(200).json(result_adminApartment);
+    }).catch((err)=>{
+        console.log("Admin Apartment Error: " + err);
+        return;
+    });
+});
+
+router.get('/only/featured/adminapartment', (req,res)=>{
+    AdminApartment.find({property_listing: 'Featured'})
+    .select('price title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminApartment)=>{
+        res.status(200).json(result_adminApartment);
+    }).catch((err)=>{
+        console.log("Admin Apartment Error: " + err);
+        return;
+    });
+});
+
+router.get('/only/normal/adminapartment', (req,res)=>{
+    AdminApartment.find({property_listing: 'Normal'})
+    .select('price title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminApartment)=>{
+        res.status(200).json(result_adminApartment);
+    }).catch((err)=>{
+        console.log("Admin Apartment Error: " + err);
+        return;
+    });
+});
+
 router.get('/only/apartment', (req,res)=>{
     Apartment.find({})
         .select('price title address purpose views property_type')
@@ -95,6 +169,45 @@ router.get('/only/apartment', (req,res)=>{
 
 router.get('/only/adminland', (req,res)=>{
     AdminLand.find({})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate('image_info', 'main_image')
+    .then((result_adminLand)=>{ 
+        res.status(200).json(result_adminLand);
+    }).catch((err)=>{
+        console.log("Only Land Error: " + err);
+        return ;
+    });
+});
+
+router.get('/only/special/adminland', (req,res)=>{
+    AdminLand.find({property_listing: 'Special'})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate('image_info', 'main_image')
+    .then((result_adminLand)=>{ 
+        res.status(200).json(result_adminLand);
+    }).catch((err)=>{
+        console.log("Only Land Error: " + err);
+        return ;
+    });
+});
+
+router.get('/only/featured/adminland', (req,res)=>{
+    AdminLand.find({property_listing: 'Featured'})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate('image_info', 'main_image')
+    .then((result_adminLand)=>{ 
+        res.status(200).json(result_adminLand);
+    }).catch((err)=>{
+        console.log("Only Land Error: " + err);
+        return ;
+    });
+});
+
+router.get('/only/normal/adminland', (req,res)=>{
+    AdminLand.find({property_listing: 'Normal'})
     .select('price area title address purpose views property_type')
     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
     .populate('image_info', 'main_image')
@@ -299,18 +412,48 @@ router.get('/province/name', (req,res)=>{
 
 router.get('/get/special', (req,res)=>{
     let brr = [];
-    AdminGhar.find({})
+    AdminGhar.find({property_listing: 'Special'})
     .select('price area title address purpose views property_type')
     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
     .populate('image_info', 'main_image')
     .then((result_adminGhar)=>{ 
-        AdminLand.find({})
+        AdminLand.find({property_listing: 'Special'})
             .select('price area title address purpose views property_type')
             .populate({path: 'owner_id', select: ['f_name', 'l_name']})
             .populate('image_info', 'main_image')
             .then((result_adminLand)=>{ 
-                AdminApartment.find({})
+                AdminApartment.find({property_listing: 'Special'})
+                    .select('price title address purpose views property_type')
+                    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+                    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+                    .populate('image_info', 'main_image')
+                    .then((result_adminApartment)=>{ 
+                        brr = result_adminGhar.concat(result_adminLand, result_adminApartment);
+                        res.status(200).send(brr);
+                    })
+                    .catch((err)=>{
+                        console.log("Error: " + err);
+                        res.send("Some Error" + err);
+                    })
+                });
+            });
+});
+
+router.get('/get/featured', (req,res)=>{
+    let brr = [];
+    AdminGhar.find({property_listing: 'Featured'})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{ 
+        AdminLand.find({property_listing: 'Featured'})
+            .select('price area title address purpose views property_type')
+            .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+            .populate('image_info', 'main_image')
+            .then((result_adminLand)=>{ 
+                AdminApartment.find({property_listing: 'Featured'})
                     .select('price title address purpose views property_type')
                     .populate({path: 'owner_id', select: ['f_name', 'l_name']})
                     .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
@@ -328,6 +471,36 @@ router.get('/get/special', (req,res)=>{
 });
 
 router.get('/get/normal', (req,res)=>{
+    let brr = [];
+    AdminGhar.find({property_listing: 'Normal'})
+    .select('price area title address purpose views property_type')
+    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+    .populate('image_info', 'main_image')
+    .then((result_adminGhar)=>{ 
+        AdminLand.find({property_listing: 'Normal'})
+            .select('price area title address purpose views property_type')
+            .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+            .populate('image_info', 'main_image')
+            .then((result_adminLand)=>{ 
+                AdminApartment.find({property_listing: 'Normal'})
+                    .select('price title address purpose views property_type')
+                    .populate({path: 'owner_id', select: ['f_name', 'l_name']})
+                    .populate({path : 'ghar_room_info', select: ['floor', 'bedroom', 'bathroom', 'living'], populate: [{path: 'floor'}, {path: 'bedroom'}, {path: 'bathroom'}, {path: 'living'}] })
+                    .populate('image_info', 'main_image')
+                    .then((result_adminApartment)=>{ 
+                        brr = result_adminGhar.concat(result_adminLand, result_adminApartment);
+                        res.status(200).send(brr);
+                    })
+                    .catch((err)=>{
+                        console.log("Error: " + err);
+                        res.send("Some Error" + err);
+                    })
+                });
+            });
+});
+
+router.get('/get/other', (req,res)=>{
     let crr = []
     Ghar.find({})
     .select('price title area address purpose views property_type')

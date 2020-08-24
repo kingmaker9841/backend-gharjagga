@@ -6,6 +6,8 @@ const Users = mongoose.model('users_info', new mongoose.Schema({
     dist_id: [{type: mongoose.Schema.Types.ObjectId, ref: 'district_info'}],
     email: {type: String, required: true},
     password: {type: String, required: true},
-    phone_number: {type: Number, required: true}
+    phone_number: {type: Number, required: true},
+    resetPasswordToken: {type: String},
+    resetPasswordTokenExpiresIn: {type: Date}
 }));
 module.exports = Users;

@@ -7,24 +7,24 @@ router.post('/login', (req,res)=>{
     Admin.findOne({email: email}, (err,admin)=>{
         if (err){
             console.log("Error While Finding Admin: " + admin);
-            return res.status(500).send("Internal Server Error");
+            return res.status(500).send("");
         }
         if (!admin){
             console.log("Not A Admin");
-            return res.status(401);
+            return res.status(200).json('Not Admin');
         }
         bcrypt.compare(password, admin.password, (err, same)=>{
             if (err){
                 console.log("Something went Wrong while comparing PW!");
-                res.status(500).json("Internal Server Error");
+                res.status(500).json("");
             }else{
                 if (!same){
                     console.log("Incorrect Password");
-                    return res.status(400);
+                    return res.status(200).json('Incorrect Password');
                 }
                 console.log("Admin Logged In");
                 req.session.admin = admin._id;
-                res.status(200).send("Admin Logged IN");
+                res.status(200).send("Admin");
             }
         }); 
     });

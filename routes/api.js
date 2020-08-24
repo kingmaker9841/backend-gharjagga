@@ -9,5 +9,7 @@ router.use('/postland', require('./postland'));
 router.use('/search', require('./search'));
 router.use('/ping', require('./ping'));
 router.use('/profileupdate', require('./profileupdate'));
+router.use('/contactemail', require('./email'));
+router.use('/forgotpassword', require('./forgotpassword'));
 
 module.exports = router;

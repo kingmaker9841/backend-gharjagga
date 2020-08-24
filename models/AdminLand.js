@@ -12,6 +12,8 @@ const AdminLand = mongoose.model('admin_land', new mongoose.Schema({
     price_type: {type: String, required: true},
     property_type: {type: String, required: true},
     purpose: {type: String, required: true},
-    views: {type: Number}
+    views: {type: Number},
+    property_listing: {type: String},
+    role: {type: String}
 }));
 module.exports = AdminLand;
